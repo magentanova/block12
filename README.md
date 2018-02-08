@@ -1,4 +1,3 @@
 # Bloq
 
-Bloq is so cool
-
+bloq is so cool
