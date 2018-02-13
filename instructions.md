@@ -15,4 +15,11 @@
   - the code lives at `/var/www/html/moosecat.io`, which should reflect the folder structure at `~/dev/games/bloq/`
   - navigate to `/var/www/html/moosecat.io`
   - `git pull origin master` should merge your updates into the code on the server.
-  - you should be able to see your updates (for now) at http://206.191.128.205/moosecat.io/
+  - you should be able to see your updates (for now) at `moosecat.io/bloq/www`
+
+## To do list
+  - Add code for the Moosecat.io website that isn't bloq
+  - add analytics code for main website
+  - add adsense code to bloq
+
+
