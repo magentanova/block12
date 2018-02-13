@@ -1,3 +1,5 @@
+'use strict;'
+
 // COMPONENTS
 var COMPONENTS = {
 	attributes: {
@@ -14,7 +16,7 @@ var COMPONENTS = {
 		EVENTS.on(EVENTS.names.scoreUpdate + ' ' + EVENTS.names.sync, function() {
 			this.get('scoreTotal').write(STATE.get('score'))
 			saveScore()
-		}.bind(this))
+			}.bind(this))
 		EVENTS.on(EVENTS.names.sync, function() {
 			this.get('levelNo').write(CONSTANTS.numeralToWord[STATE.get('level')])
 		}.bind(this))
@@ -179,29 +181,34 @@ var STATE = EVENTS.extend({
 		STATE.set({
 			advancing: true
 		})
-		// pause for dramatic effect
-		setTimeout(function() {
-			// for every empty row space remaining, run handleRowScore at that location
-			var ps = []
-			for (var i = STATE.get('currentRows'); i < STATE.get('maxRows'); i ++) {
-				var bottom = i * STATE.get('sqSide')
-				ps.push(handleRowScore(bottom,750))
-			}
-			STATE.resetLevelDefaults() // prevents level jumps while transitioning
 
-			// when all those animations are complete, then fade out the container etc
-			Promise.all(ps).then(function() {
-				return disappear($('#container'))
-			}).then(function() {
-				EVENTS.trigger(EVENTS.names.levelComplete)
-				S.revealButtons()
-				appear($('#container'))
-				STATE.set({
-					advancing: false
+		return animate(function(res) {
+			setTimeout(function() {
+				// for every empty row space remaining, run handleRowScore at that location
+				var ps = []
+				for (var i = STATE.get('currentRows'); i < STATE.get('maxRows'); i ++) {
+					var bottom = i * STATE.get('sqSide')
+					ps.push(handleRowScore(bottom,750))
+				}
+				STATE.resetLevelDefaults() // prevents level jumps while transitioning
+
+				// when all those animations are complete, then fade out the container etc
+				Promise.all(ps).then(function() {
+					return disappear($('#container'))
+				}).then(function() {
+					EVENTS.trigger(EVENTS.names.levelComplete)
+					S.revealButtons()
+					appear($('#container'))
+					STATE.set({
+						advancing: false
+					})
+					res()
 				})
-			})
 
-		}, 500)
+			}, 500)
+		})
+		// pause for dramatic effect
+		
 	},
 
 	load: function(oldState) {
@@ -214,7 +221,6 @@ var STATE = EVENTS.extend({
 
 	reset: function() {
 		STATE.set(this.getDefaults())
-		console.log(STATE.get('view'))
 		window.localStorage.setItem('bloq_state', null) 
 		window.localStorage.setItem('bloq_grid', null) 
 		window.localStorage.setItem('bloq_player_row', null) 
@@ -222,19 +228,19 @@ var STATE = EVENTS.extend({
 	},
 
 	revealButtons: function() {
-		if (this.get('level') >= 5) {
+		if (this.get('level') >= 5 || location.hash == '#cheat') {
 			appear($('#invert'))
 			$('#invert').addEventListener(CONTACT_EVENT,function() {
 				dispatchPowerUp(invertPlayerRow)
 			})
 		}
-		if (this.get('level') >= 6) {
+		if (this.get('level') >= 6 || location.hash == '#cheat') {
 			appear($('#flip'))
 			$('#flip').addEventListener(CONTACT_EVENT,function() {
 				dispatchPowerUp(flipPlayerRow)
 			})
 		}
-		if (this.get('level') >= 7) {
+		if (this.get('level') >= 7 || location.hash == '#cheat') {
 			appear($('#shiftLeft'))
 			appear($('#shiftRight'))
 			$('#shiftLeft').addEventListener(CONTACT_EVENT,function() {
@@ -310,15 +316,17 @@ var VIEWS = {
 			// set up listeners
 
 			EVENTS.on(EVENTS.names.powerUpUsed, function() {
+				console.log("Current rows"+STATE.get('currentRows'))
 				if (STATE.get('currentRows') < 1) {
+					console.log("I think the current rows are <1. The actual number of current rows:"+STATE.get('currentRows'))
 					EVENTS.trigger(EVENTS.names.drop)
+					console.log("DROPPING ROW")
 				}
 				EVENTS.trigger(EVENTS.names.playerRowChange)
 			})
 				// update local storage in response to various events
 			EVENTS.on(`${EVENTS.names.playerRowChange} ${EVENTS.names.gridRowAdded} ${EVENTS.names.gridRowLost} ${EVENTS.names.levelStart} ${EVENTS.names.levelComplete} ${EVENTS.names.scoreUpdate}`, function() {
 				if (STATE.get('view') == 'tutorial') return 
-					console.log('saving state')
 				STATE.set('playerBlocks', $('#playerRow').children.map(function(node) {
 					return node.getAttribute('data-color')
 					})
@@ -468,7 +476,6 @@ function Grid() {
 		height: toPx(STATE.get('sqSide') * STATE.get('maxRows'))
 	})
 
-	console.log(STATE.attributes)
 
 	// set up subscriptions
 		// add a row whenever it's time to do so
@@ -525,7 +532,20 @@ Grid.prototype = Component.prototype.extend({
 			}
 		})
 		var promise = this.handleMatches(matchedRows)
-			.then(STATE.levelUp.bind(STATE))		
+			.then(STATE.levelUp.bind(STATE))
+			// If we don't level up but we have zero rows, drop another row
+			// while giving points for an additional row
+			.then(function(){
+				if (STATE.get('currentRows') === 0) {
+					animate(function(res){
+						setTimeout(function() {
+							handleRowScore(0, 550)
+							EVENTS.trigger(EVENTS.names.drop)
+							res()
+						}, 1250)	
+					})
+				}
+		})		
 		return promise
 	},
 
@@ -777,7 +797,7 @@ Block.prototype = Component.prototype.extend({
 	},
 
 	switchColor: function() {
-		this.set("data-color", this.get('data-color') === 'red' ? 'blue' : 'red',)
+		this.set("data-color", this.get('data-color') === 'red' ? 'blue' : 'red')
 		this.setStyle("background", STATE.get('settings').colors[this.get('data-color')])
 	}
 })
@@ -999,8 +1019,8 @@ function initLevel() {
 function invertBlock(blockNode) {
 	return animate(function(res) {
 		var currentColorName = blockNode.getAttribute('data-color'),
-			targetColorName = blockNode.getAttribute('data-color') === 'red' ? 'blue' : 'red',
-			currentColors = getRGBObj(STATE.get('settings').colors[currentColorName])
+			targetColorName = currentColorName === 'red' ? 'blue' : 'red',
+			currentColors = getRGBObj(STATE.get('settings').colors[currentColorName]),
 			targetColors = getRGBObj(STATE.get('settings').colors[targetColorName]),
 			redIncr = (targetColors.red - currentColors.red) / CONSTANTS.invertSpeed,
 			greenIncr = (targetColors.green - currentColors.green) / CONSTANTS.invertSpeed,
@@ -1011,10 +1031,9 @@ function invertBlock(blockNode) {
 			currentColors.green = currentColors.green + greenIncr
 			currentColors.blue = currentColors.blue + blueIncr
 			blockNode.style.background = getRGBStr(currentColors)
-			if (currentColors.red * redIncr > targetColors.red * redIncr) { 
+			if (currentColors.red * redIncr >= targetColors.red * redIncr) { 
 				// the above formula allows us to accommodate both those values that were 
 					// ascending and those that were descending.
-				console.log(targetColorName, getRGBStr(targetColors))
 				blockNode.style.background = getRGBStr(targetColors)
 				blockNode.setAttribute('data-color', targetColorName)
 				res()
@@ -1079,7 +1098,6 @@ function runLevel() {
 
 	// refill rows
 	var row = COMPONENTS.get('playerRow')
-	console.log(row.__proto__)
 	row.fill()
 	var grid = COMPONENTS.get('grid')
 	grid.playerRow = row
@@ -1157,7 +1175,6 @@ function toPx(val) {
 
 // SET GLOBAL EVENT LISTENERS
 $('#goBack').addEventListener(CONTACT_EVENT, function() {
-	console.log('clicked me')
 	if (STATE.get('animating') || STATE.get('advancing')) return
 	saveScore()
 	loadView('home')
