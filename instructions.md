@@ -9,8 +9,8 @@
 
 ## connecting to my server
 
-  - my hosting company (dylan's company) is [here](https://east1.openhosting.com/accounts/) but you shouldn't need to go there.
-  - just connect to the server with `ssh toor@206.191.128.205`, password `jdr81385`
+  - my hosting company (dylan's company) is [not here](https://east1.openhosting.com/accounts/) but you shouldn't need to go there. or to the actual hosting company, which is digital ocean. username is my email and password is my initials (3 letters, lowercase) plus my birthday (5 digits)
+  - just connect to the server with `ssh toor@165.227.94.61`, password `jdr81385`
   - now, you are still in the terminal, but effectively, you're on that computer where the server is running. all your keystrokes will be sent there, and all output on that machine will appear on your terminal.
   - the code lives at `/var/www/html/moosecat.io`, which should reflect the folder structure at `~/dev/games/bloq/`
   - navigate to `/var/www/html/moosecat.io`

@@ -67,8 +67,8 @@ var TEMPLATES = {
 			'<div class="settings-option">' +
 			'	<h4>music</h4>' +
 			'	<div class="settings-visual">' +
-			'		<label id="music-slider" class="switch">' +
-			'			<input checked type="checkbox">' +
+			'		<label class="switch">' +
+			'			<input id="music-slider" checked type="checkbox">' +
 			'			<span class="slider"></span>' +
 			'		</label>' +
 			'	</div>' +
@@ -76,8 +76,8 @@ var TEMPLATES = {
 			'<div class="settings-option">' +
 			'	<h4>sound</h4>' +
 			'	<div class="settings-visual">' +
-			'		<label id="sounds-slider" class="switch">' +
-			'			<input checked type="checkbox">' +
+			'		<label class="switch">' +
+			'			<input id="sounds-slider" checked type="checkbox">' +
 			'			<span class="slider"></span>' +
 			'		</label>' +
 			'	</div>' +
@@ -86,7 +86,7 @@ var TEMPLATES = {
 			'	<h4>colors</h4>' +
 			'	<div class="settings-visual">' +
 			'		<label id="colors" class="switch">' +
-			'			<input checked type="checkbox">' +
+			'			<input id="colors-slider" checked type="checkbox">' +
 			'			<span class="colors round slider"></span>' +
 			'		</label>' +
 			'	</div>' +

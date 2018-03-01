@@ -22,9 +22,9 @@ var SETTINGS = {
 				el.classList.add('alt')
 			})
 		}
-		$('#colors input').checked = SETTINGS.origColors
-		$('#music-slider input').checked = SETTINGS.music
-		$('#sounds-slider input').checked = SETTINGS.sounds
+		$('#colors-slider').checked = SETTINGS.origColors
+		$('#music-slider').checked = SETTINGS.music
+		$('#sounds-slider').checked = SETTINGS.sounds
 		this.listen()
 	},
 	listen: function() {
@@ -33,9 +33,9 @@ var SETTINGS = {
 			console.log("event is heard")
 		})
 
-		$('#colors').addEventListener(CONTACT_EVENT, function(e) {
-			if (debounce(e)) return
-			console.log("event is heard")
+		$('#colors-slider').addEventListener(CONTACT_EVENT, function(e) {
+			// if (debounce(e)) return
+			console.log("event is heard", e.target)
 			if (SETTINGS.origColors) {
 				console.log('SETTING ALT COLORS')
 				SETTINGS.origColors = false
@@ -59,9 +59,9 @@ var SETTINGS = {
 		// 	// debounce(e)
 		// 	console.log("event is heard")
 		// })
-		console.log("event is heard")
 		$('#music-slider').addEventListener(CONTACT_EVENT, function(e) {
 			console.log("event is heard again")
+			console.log("event is heard", e.target)
 			if (SETTINGS.music) {
 				console.log("pausing music")
 				SETTINGS.music = false
