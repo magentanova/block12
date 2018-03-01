@@ -316,11 +316,8 @@ var VIEWS = {
 			// set up listeners
 
 			EVENTS.on(EVENTS.names.powerUpUsed, function() {
-				console.log("Current rows"+STATE.get('currentRows'))
 				if (STATE.get('currentRows') < 1) {
-					console.log("I think the current rows are <1. The actual number of current rows:"+STATE.get('currentRows'))
 					EVENTS.trigger(EVENTS.names.drop)
-					console.log("DROPPING ROW")
 				}
 				EVENTS.trigger(EVENTS.names.playerRowChange)
 			})
@@ -667,6 +664,7 @@ Row.prototype = Component.prototype.extend({
 		this.node.clearChildren()
 		return this
 	},
+
 
 	fill: function() {
 		this.node.clearChildren()
@@ -1157,6 +1155,7 @@ function shiftRow(way) {
 		}
 		inchLeft()
 	}).then(function() {
+		// THIS IS WHERE THE PROBLEM IS BUT I DON"T UNDERSTAND ENOUGH TO SOLVE THIS
 		rowComp.node.removeChild(oldBlockComp.node)
 		EVENTS.trigger(EVENTS.names.powerUpUsed)
 	})

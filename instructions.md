@@ -2,10 +2,10 @@
 
 ## editing the code
 
-  - code on my computer is in `~/dev/games/bloq`
+  - code on my computer is in `o`
       + the full project contains various files and tools for re-creating the project on other platforms like ios. the core code for the browser version of the game is in `~/dev/games/bloq/www`. that's where the familiar html, js and css files are.
       + edit the code there using sublime (`subl ~/dev/games/bloq/www`) or whatever. test it by simply opening (`open index.html`) the home page in a browser. 
-      + push it to bitbucket with `git add .`, `git commit -m "YOUR MESSAGE"`, and `git push origin master.`
+      + push it to bitbucket with `git add .`, `git commit -m "YOUR MESSAGE"`, and `git push origin master`
 
 ## connecting to my server
 
@@ -18,8 +18,11 @@
   - you should be able to see your updates (for now) at `moosecat.io/bloq/www`
 
 ## To do list
-  - Add code for the Moosecat.io website that isn't bloq
+  - Add code for the Moosecat.io website that isn't bloq, make sure the directory doesn't show any more on mooosecat.io
   - add analytics code for main website
   - add adsense code to bloq
+  - why does it show you all the code when you look at the source??
+  - figure out how to upload code properly to the server
+  - 
 
 

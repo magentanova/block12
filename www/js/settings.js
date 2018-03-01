@@ -28,8 +28,14 @@ var SETTINGS = {
 		this.listen()
 	},
 	listen: function() {
+		$('#sounds-slider').addEventListener(CONTACT_EVENT, function(e) {
+			// debounce(e)
+			console.log("event is heard")
+		})
+
 		$('#colors').addEventListener(CONTACT_EVENT, function(e) {
 			if (debounce(e)) return
+			console.log("event is heard")
 			if (SETTINGS.origColors) {
 				console.log('SETTING ALT COLORS')
 				SETTINGS.origColors = false
@@ -49,16 +55,31 @@ var SETTINGS = {
 				})
 			}
 		})
-		$('#sounds-slider').addEventListener(CONTACT_EVENT, function(e) {
-			debounce(e)
-		})
+		// $('#sounds-slider').addEventListener(CONTACT_EVENT, function(e) {
+		// 	// debounce(e)
+		// 	console.log("event is heard")
+		// })
+		console.log("event is heard")
 		$('#music-slider').addEventListener(CONTACT_EVENT, function(e) {
-			if (debounce(e)) return
-			$(STATE.get('song')).pause()
-			STATE.set({
-				song: STATE.get('song') == CONSTANTS.songs[0] ? CONSTANTS.songs[1] : CONSTANTS.songs[0]
-			})
-			$(STATE.get('song')).play()
+			console.log("event is heard again")
+			if (SETTINGS.music) {
+				console.log("pausing music")
+				SETTINGS.music = false
+				$(STATE.get('song')).pause()
+				return
+			}
+			else {
+				SETTINGS.music = true
+				$(STATE.get('song')).play()
+				console.log("playing music")
+			}
+			// if (debounce(e)) return
+			// $(STATE.get('song')).pause()
+			// STATE.set({
+			// 	song: STATE.get('song') == CONSTANTS.songs[0] ? CONSTANTS.songs[1] : CONSTANTS.songs[0]
+			// })
+			// $(STATE.get('song')).play()
+			// }
 		})
 	}
 }
