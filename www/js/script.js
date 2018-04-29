@@ -91,7 +91,8 @@ var EVENTS = {
 		playerRowChange: 'playerRowChange',
 		powerUpUsed: 'powerUpUsed',
 		scoreUpdate: 'scoreUpdate',
-		sync: 'sync'
+		sync: 'sync',
+		tutorialAdvance: 'tutorialAdvance'
 	}
 }
 
@@ -100,8 +101,10 @@ var STATE = EVENTS.extend({
 	attributes: {
 		advancing: false,
 		animating: false,
-		gridRows: [],
 		tutorialStage: 0,
+		tutorialStep: 0,
+		gridRows: [],
+		tutorialStep: 0,
 		level: 4,
 		currentRows: 0,
 		maxRows: 8,
@@ -117,8 +120,10 @@ var STATE = EVENTS.extend({
 	defaultAttributes: {
 		advancing: false,
 		animating: false,
-		gridRows: [],
 		tutorialStage: 0,
+		tutorialStep: 0,
+		gridRows: [],
+		tutorialStep: 0,
 		level: 4,
 		currentRows: 0,
 		maxRows: 8,
@@ -263,7 +268,6 @@ var STATE = EVENTS.extend({
 		// set row and grid width according to state
 		$('#playerRowContainer').style.width = STATE.getRowWidth()
 		$('#gameContainer').style.width = STATE.getRowWidth()
-		var lvl = STATE.get('level')
 		this.revealButtons()
 		EVENTS.trigger(EVENTS.names.sync)
 	},
@@ -371,16 +375,7 @@ var VIEWS = {
 	tutorial: {
 		content: TEMPLATES.play,
 		init: function() {
-			VIEWS.play.init({tutorial: true})
-			STATE.set('view','tutorial')
-			COMPONENTS.get('playerRow').class('pulsing')
-			var dropRow = function() {
-				return COMPONENTS.get('grid').addRow()
-			}
-			var promise = dropRow()
-			for (var i = 0; i < 3; i ++) {
-				promise = promise.then(dropRow)
-			}
+			runTutorial()
 		}
 	}
 }

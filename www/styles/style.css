@@ -183,7 +183,7 @@ i {
 	position: relative;
 	opacity: 1;
 	perspective: 800px;
-	z-index: 2;
+	z-index: 3;
 }
 
 #leftSide {
@@ -303,6 +303,7 @@ i {
 	font-size: 9vh;
 	position: fixed;
 	top: 0;
+	z-index: -1;
 }
 
 #reset {
@@ -419,6 +420,16 @@ h2#high-score {
 	visibility: hidden;
 }
 
+#tutorial-box {
+	position: fixed;
+	top: 3vh;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	width: 175%;
+	padding: 5vh 0;
+	background-color: #222;
+	border: 1px solid #ddd;
+}
 #tutorialContainer {
 	position: absolute;
 	top: 50%;
