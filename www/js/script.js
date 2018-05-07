@@ -39,7 +39,7 @@ var CONSTANTS = {
 		13:"thirteen"
 	},
 	dropIncr: 10,
-	fadeIncr: .04,
+	fadeIncr: 1/24,
 	invertSpeed: 20,
 	rotateIncr: 2.88,
 	songs: ['#polyphonic', '#hallelujah']
@@ -307,6 +307,7 @@ var VIEWS = {
 
 			EVENTS.clear() // clear zombie event submissions
 			COMPONENTS.init() // create global components
+			var grid = COMPONENTS.get('grid')
 			STATE.initPlay() // set state defaults
 
 			// set heights according to device dimensions
@@ -316,8 +317,13 @@ var VIEWS = {
 			// set up subscriptions
 			EVENTS.on(EVENTS.names.levelStart, runLevel)
 			EVENTS.on(EVENTS.names.levelComplete, initLevel)
-
-			// set up listeners
+			EVENTS.on(EVENTS.names.drop, grid.addRow.bind(grid))
+			EVENTS.on(EVENTS.names.playerRowChange, grid.checkForMatch.bind(grid))
+			EVENTS.on(EVENTS.names.sync, function() {
+				STATE.get('gridRows').forEach(function(colorArr, i) {
+					grid.loadRow(colorArr, i)
+				}.bind(grid))
+			}.bind(grid))
 
 			EVENTS.on(EVENTS.names.powerUpUsed, function() {
 				if (STATE.get('currentRows') < 1) {
@@ -456,6 +462,11 @@ Component.prototype = EVENTS.extend({
 		return this
 	},
 
+	unlisten: function(evt,cb) {
+		this.node.removeEventListener(evt,cb)
+	},
+
+
 	write: function(content) {
 		this.node.innerHTML = content
 	}
@@ -467,30 +478,13 @@ function Grid() {
 	this.setStyle({
 		height: toPx(STATE.get('sqSide') * STATE.get('maxRows'))
 	})
-
-
-	// set up subscriptions
-		// add a row whenever it's time to do so
-	var addRow = this.addRow.bind(this),
-		checkForMatch = this.checkForMatch.bind(this)
-	EVENTS.on(EVENTS.names.drop, addRow)
-
-		// check for match whenever playerRowChanges
-	EVENTS.on(EVENTS.names.playerRowChange, checkForMatch)
-
-	// rehydrate state if we ever click away
-	EVENTS.on(EVENTS.names.sync, function() {
-		STATE.get('gridRows').forEach(function(colorArr, i) {
-			this.loadRow(colorArr, i)
-		}.bind(this))
-	}.bind(this))
 }
 
 Grid.prototype = Component.prototype.extend({
 	addRow: function(colors) {		
 		var row = new GridRow()
 		// fill randomly or specifically, depending on use case
-		row.fill()
+		row.fill(colors)
 		if (arraysEqual(row.colors(),COMPONENTS.get('playerRow').colors())) {
 			return this.addRow()
 		}
@@ -636,21 +630,22 @@ Grid.prototype = Component.prototype.extend({
 })
 
 function Row() {
-
+	this.blocks = []
 }
 
 Row.prototype = Component.prototype.extend({
 
 	addBlock: function(b) {
+		this.blocks.push(b)
 		this.node.appendChild(b.node)
 	},
 
-	blocks: function() {
+	getBlocks: function() {
 		return this.node.querySelectorAll('.block')
 	},
 
 	colors: function() {
-		return this.blocks().map(function(el) {
+		return this.getBlocks().map(function(el) {
 			return el.style.background
 		})
 	},
@@ -661,11 +656,18 @@ Row.prototype = Component.prototype.extend({
 	},
 
 
-	fill: function() {
+	fill: function(colors) {
 		this.node.clearChildren()
-		var blocksCalledFor = Math.min(STATE.get('level'),11)
+		var blocksCalledFor = Math.min(STATE.get('level'),11),
+			colorIndex = 0
 		while (blocksCalledFor > this.node.children.length) {
-			this.addBlock(this.makeBlock().randomFill())
+			if (colors) {
+				this.addBlock(this.makeBlock().fill(colors[colorIndex]))
+			}
+			else {
+				this.addBlock(this.makeBlock().randomFill())
+			}
+			colorIndex += 1
 		}
 		return this
 	},
@@ -675,7 +677,7 @@ Row.prototype = Component.prototype.extend({
 	},
 
 	reverseBlocks: function() {
-		var reversedBlocks = this.blocks().reverse()
+		var reversedBlocks = this.getBlocks().reverse()
 		this.empty()
 		reversedBlocks.forEach(function(blockEl) {
 			this.node.appendChild(blockEl)
@@ -691,6 +693,7 @@ Row.prototype = Component.prototype.extend({
 })
 
 function GridRow() {
+	this.blocks = []
 	this.node = document.createElement('div')
 	this.node.className = 'row gridRow'
 }
@@ -701,6 +704,7 @@ GridRow.prototype = Row.prototype.extend({
 
 function PlayerRow() {
 	this.assignNode('#playerRow')
+	this.blocks = []
 	EVENTS.on(EVENTS.names.sync, function() {
 		this.setBlocks(STATE.get('playerBlocks'))
 	}.bind(this))
@@ -762,14 +766,7 @@ function Block(inputColor) {
 
 Block.prototype = Component.prototype.extend({
 	addSwitchListener: function() {
-		this.listen(CONTACT_EVENT, function(event) {
-			playSound('basic_tap')		
-			if (STATE.get('advancing') || STATE.get('animating')) return 
-			this.switchColor()
-			EVENTS.trigger('playerRowChange')
-			if (STATE.get('tutorialStage') === 1) return
-			EVENTS.trigger('drop')
-		}.bind(this))
+		this.listen(CONTACT_EVENT, this.handleClick.bind(this))
 		return this
 	},
 
@@ -781,12 +778,25 @@ Block.prototype = Component.prototype.extend({
 		return this
 	},
 
+	handleClick: function(event) {
+		playSound('basic_tap')		
+		if (STATE.get('advancing') || STATE.get('animating')) return 
+		this.switchColor()
+		EVENTS.trigger('playerRowChange')
+		if (STATE.get('tutorialStage') === 1) return
+		EVENTS.trigger('drop')
+	},
+
 	randomFill: function() {
 		color = ['red','blue'].choice()
 		this.node.setAttribute('data-color', color)
 		return this.setStyle({
 			background: STATE.get('settings').colors[color]
 		})
+	},
+
+	removeSwitchListener: function() {
+		this.unlisten(CONTACT_EVENT, this.handleClick.bind(this))
 	},
 
 	switchColor: function() {
@@ -834,7 +844,8 @@ function arraysEqual(arr1,arr2) {
 	return true
 }
 
-function appear(el) {
+function appear(el,fadeRate) {
+	var fadeRate = fadeRate || CONSTANTS.fadeIncr
 	if (el instanceof Array) {
 		el.forEach(appear)
 	}
@@ -842,7 +853,7 @@ function appear(el) {
 	el.style.visibility = 'visible'
 	return animate(function(res) {
 		var brighten = function() {
-			el.style.opacity = parseFloat(el.style.opacity) + CONSTANTS.fadeIncr
+			el.style.opacity = parseFloat(el.style.opacity) + fadeRate
 			if (el.style.opacity < 1) {
 				requestAnimationFrame(brighten)
 			}
@@ -884,11 +895,12 @@ function closeTutorial() {
 	return false
 }
 
-function disappear(el) {
+function disappear(el,fadeRate) {
+	fadeRate = fadeRate || CONSTANTS.fadeIncr
 	el.style.opacity = 1
 	return animate(function(res) {
 		var dimIt = function() {
-			el.style.opacity = Math.max(parseFloat(el.style.opacity) - CONSTANTS.fadeIncr, 0)
+			el.style.opacity = Math.max(parseFloat(el.style.opacity) - fadeRate, 0)
 			if (el.style.opacity === '0') {
 				res()
 			}
@@ -1042,7 +1054,7 @@ function invertBlock(blockNode) {
 function invertPlayerRow() {
 	playSound('invert')
 	var playerRow = COMPONENTS.get('playerRow')
-	var ps = playerRow.blocks().map(invertBlock)
+	var ps = playerRow.getBlocks().map(invertBlock)
 	return Promise.all(ps).then(function(){
 		EVENTS.trigger(EVENTS.names.powerUpUsed)
 	})
@@ -1067,6 +1079,20 @@ function main() {
 		playMusic()
 	}
 	loadView('home')
+}
+
+function pause(ms) {
+	STATE.set({
+		animating: true
+	})
+	return new Promise(function(res,rej) {
+		setTimeout(function() {
+			STATE.set({
+				animating: false
+			})
+			res()
+		},ms)
+	})
 }
 
 function playMusic() {
@@ -1114,8 +1140,8 @@ function shiftRow(way) {
 		// and ruins the row
 	var rowComp = COMPONENTS.get('playerRow'),
 		spd = STATE.get('sqSide') / 26,
-		firstBlock = rowComp.blocks()[0],
-		lastBlock = rowComp.blocks()[rowComp.blocks().length - 1],
+		firstBlock = rowComp.getBlocks()[0],
+		lastBlock = rowComp.getBlocks()[rowComp.getBlocks().length - 1],
 		oldBlockWidth = STATE.get('sqSide'),
 		newBlockWidth = 0
 
@@ -1163,12 +1189,18 @@ function showPlayButton() {
 	})
 }
 
+function titleCase(str) {
+	var titleWord = function(wrd) {return wrd[0].toUpperCase() + wrd.slice(1)}
+	return str.split(' ').map(titleWord).join(' ')
+}
+
 function toPx(val) {
 	return val.slice && val.slice(-2) === 'px' ? val : val + 'px'
 }
 
 // SET GLOBAL EVENT LISTENERS
 $('#goBack').addEventListener(CONTACT_EVENT, function() {
+	console.log('goin back')
 	if (STATE.get('animating') || STATE.get('advancing')) return
 	saveScore()
 	loadView('home')

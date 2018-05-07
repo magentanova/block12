@@ -421,15 +421,10 @@ h2#high-score {
 }
 
 #tutorial-box {
-	position: fixed;
-	top: 3vh;
-	left: 50%;
-	transform: translate(-50%,-50%);
-	width: 175%;
-	padding: 5vh 0;
-	background-color: #222;
-	border: 1px solid #ddd;
+	width: 100%;
+	padding: 2vh;
 }
+
 #tutorialContainer {
 	position: absolute;
 	top: 50%;
@@ -454,6 +449,8 @@ h2#high-score {
 
 .pulsing {
 	animation: pulse 2s infinite;
+	z-index: 100;
+	position: relative;
 }
 
 @-webkit-keyframes pulse {
