@@ -17,7 +17,6 @@ function MessageBox() {
 	this.textWrapper = textWrapper
 }	
 
-
 MessageBox.prototype = {
 
 	fadeTextIn: function() {
@@ -51,8 +50,22 @@ MessageBox.prototype = {
 	}
 }
 
+function handleTutorialPowerUp(e) {
+	nodeId = e.target.id
+	switch (nodeId) {
+		case 'invert': 
+			dispatchPowerUp(invertPlayerRow)
+		case 'flip': 
+			dispatchPowerUp(flipPlayerRow)
+		case 'shiftRight':
+			dispatchPowerUp(shiftRow, 'right')
+		case 'shiftLeft':
+			dispatchPowerUp(shiftRow, 'left')
+	}
+	advanceTutorial()
+}
+
 function tutorialNext() {
-	console.log(STATE.get('tutorialStep'))
 	var messageBox = COMPONENTS.get('messageBox'),
 		grid = COMPONENTS.get('grid'),
 		playerRow = COMPONENTS.get('playerRow')
@@ -121,6 +134,7 @@ function tutorialNext() {
 	}
 
 	if (STATE.get('tutorialStep') == 4) {
+		$('body').removeEventListener(CONTACT_EVENT, advanceTutorial)
 		messageBox.fadeTextOut()
 			.then(function() {
 				messageBox.write([
@@ -128,6 +142,133 @@ function tutorialNext() {
 					`${titleCase(CONTACT_EVENT)} the glowing block to make a match.`
 					])
 				return pause(250).then(messageBox.fadeTextIn.bind(messageBox))
+			})
+			.then(function() {
+				var targetBlock = playerRow.blocks[2]
+				targetBlock.class('pulsing')
+				targetBlock.addSwitchListener()
+				targetBlock.node.addEventListener(CONTACT_EVENT,advanceTutorial)
+			})
+	}
+
+	if (STATE.get('tutorialStep') == 5) {
+		var targetBlock = playerRow.blocks[2]
+		pause(50)
+			.then(function() {
+				targetBlock.removeSwitchListener()
+				targetBlock.node.removeEventListener(CONTACT_EVENT, advanceTutorial)
+				targetBlock.removeClass('pulsing')
+				return messageBox.fadeTextOut()
+			})
+			.then(function() {
+				grid.checkForMatch()
+				grid.addRow('blue blue blue blue blue blue blue'.split(' '))
+				messageBox.write([
+					"Bravo! Bravo! You got POINTS!",
+					"Time to make things more interesting.",
+					"(Click to continue.)"
+					])
+				return pause(250).then(messageBox.fadeTextIn.bind(messageBox))
+			})
+			.then(function(){$('body').addEventListener(CONTACT_EVENT, advanceTutorial)})
+	}
+
+	if (STATE.get('tutorialStep') == 6) {
+		appear($("#invert"))
+		appear($("#flip"))
+		appear($("#shiftLeft"))
+		appear($("#shiftRight"))
+		$('body').removeEventListener(CONTACT_EVENT, advanceTutorial)
+		messageBox.fadeTextOut()
+			.then(function() {
+				messageBox.write([
+					"The buttons to the left are special abilities.",
+					"They're not available until level 7.",
+					"This tutorial takes place in level 7 ;)",
+					"(Click to continue.)"
+					])
+				return pause(250).then(messageBox.fadeTextIn.bind(messageBox))
+			})
+			.then(function(){$('body').addEventListener(CONTACT_EVENT, advanceTutorial)})
+	}
+
+	if (STATE.get('tutorialStep') == 7) {
+		$('body').removeEventListener(CONTACT_EVENT, advanceTutorial)
+		messageBox.fadeTextOut()
+			.then(function() {
+				messageBox.write([
+					"Special abilities are cool because they're free to use...",
+					"...as in, a new row won't fall when you use a special ability.",
+					"(Click to continue.)"
+					])
+				return pause(250).then(messageBox.fadeTextIn.bind(messageBox))
+			})
+			.then(function(){$('body').addEventListener(CONTACT_EVENT, advanceTutorial)})
+	}
+
+	if (STATE.get('tutorialStep') == 8) {
+		$('body').removeEventListener(CONTACT_EVENT, advanceTutorial)
+		messageBox.fadeTextOut()
+			.then(function() {
+				messageBox.write([
+					"There's the color swap...",
+					])
+				return pause(250).then(messageBox.fadeTextIn.bind(messageBox))
+			})
+			.then(function(){
+				$('#invert').classList.add('pulsing')
+				$('#invert').addEventListener(CONTACT_EVENT,handleTutorialPowerUp)
+			})
+	}
+
+	if (STATE.get('tutorialStep') == 9) {
+		$('#invert').removeEventListener(CONTACT_EVENT,handleTutorialPowerUp)
+		$('#invert').classList.remove('pulsing')
+		messageBox.fadeTextOut()
+			.then(function() {
+				messageBox.write([
+					"the flip..."
+					])
+				return pause(250).then(messageBox.fadeTextIn.bind(messageBox))
+			})
+			.then(function() {
+				$('#flip').classList.add('pulsing')
+				$('#flip').addEventListener(CONTACT_EVENT, handleTutorialPowerUp)
+			})
+	}
+
+	if (STATE.get('tutorialStep') == 10) {
+		$('#flip').removeEventListener(CONTACT_EVENT,handleTutorialPowerUp)
+		$('#flip').classList.remove('pulsing')
+		messageBox.fadeTextOut()
+			.then(function() {
+				messageBox.write([
+					"and of course the slide."
+					])
+				return pause(250).then(messageBox.fadeTextIn.bind(messageBox))
+			})
+			.then(function() {
+				$('#shifters').classList.add('pulsing')
+				$('#shifters').addEventListener(CONTACT_EVENT, handleTutorialPowerUp)
+			})
+	}
+
+	if (STATE.get('tutorialStep') == 11) {
+		$('#shifters').removeEventListener(CONTACT_EVENT,handleTutorialPowerUp)
+		$('#shifters').classList.remove('pulsing')
+		messageBox.fadeTextOut()
+			.then(function() {
+				messageBox.write([
+					"See if you can take out the top row using only special abilities."
+					])
+				return pause(250).then(messageBox.fadeTextIn.bind(messageBox))
+			})
+			.then(function() {
+				var ids = ['shifters','flip','invert']
+				for (var i = 0; i < ids.length; i ++) {
+					$('#' + ids[i]).classList.add('pulsing')
+					$('#' + ids[i]).addEventListener(CONTACT_EVENT, handleTutorialPowerUp)
+				}
 			})
 	}
 }
@@ -140,23 +281,23 @@ function runTutorial() {
 	EVENTS.clear() // clear zombie event submissions
 	COMPONENTS.init() // create global components
 	COMPONENTS.get('grid').clear()
-	STATE.initPlay() // set state defaults
 	STATE.set({
 		currentRows: 0,
 		level: 7,
 		playerBlocks: Array(7).fill(null)
 	})
+	STATE.initPlay() // set state defaults
+	STATE.updateScore(0)
 	// set heights according to device dimensions
 	$('#playerRowContainer').style.height = toPx(STATE.get('sqSide'))
 	$('#grid').style.height = STATE.get('gridHeight')
 
 	// set up subscriptions
-	EVENTS.on(EVENTS.names.levelStart, runLevel)
-	EVENTS.on(EVENTS.names.levelComplete, initLevel)
 
 	// set up listeners
 	EVENTS.off(EVENTS.names.sync)
-	STATE.sync()
+	$('#playerRowContainer').style.width = STATE.getRowWidth()
+	$('#gameContainer').style.width = STATE.getRowWidth()
 	COMPONENTS.set({
 		messageBox: new MessageBox()
 	})
