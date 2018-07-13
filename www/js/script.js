@@ -137,7 +137,7 @@ var STATE = EVENTS.extend({
 		playerBlocks: Array(4).fill(['red','blue'].choice()),
 		score: 0,
 		settings: SETTINGS,
-		song: '#hallelujah',
+		song: '#beep-box',
 		sqSide: null,
 		view: 'home'
 	},
@@ -1089,6 +1089,7 @@ function invertPlayerRow() {
 }
 
 function loadView(name) {
+	playMusic()
 	EVENTS.clear()
 	$('#container').innerHTML = VIEWS[name].content
 	STATE.set('view',name)
@@ -1104,7 +1105,6 @@ function loadView(name) {
 function main() {
 	if (STATE.getSavedState()) {
 		STATE.load(STATE.getSavedState())
-		playMusic()
 	}
 	loadView('home')
 }
