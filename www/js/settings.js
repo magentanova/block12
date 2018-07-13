@@ -16,6 +16,7 @@ var SETTINGS = {
 	primaryBlue: 'rgb(39, 88, 107)',
 	secondaryRed: 'rgb(76, 134, 168)',
 	secondaryBlue: 'rgb(192, 74, 188)',
+	testMode: false,
 	init: function() {
 		if (!SETTINGS.origColors) {
 			$$('.slider').forEach(function(el) {

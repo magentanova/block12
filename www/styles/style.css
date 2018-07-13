@@ -275,7 +275,7 @@ i {
 	width: 105%;
 	position: relative;
 	margin-left: -2.5%;
-	margin-bottom: 2px;
+	margin-bottom: 1px;
 	margin-top: 1.8vh;
 	height: 10.6vh;
 	z-index: 3;
@@ -303,7 +303,6 @@ i {
 	font-size: 9vh;
 	position: fixed;
 	top: 0;
-	z-index: -1;
 }
 
 #reset {
@@ -317,7 +316,7 @@ i {
 #playButton {
 	outline: 1px solid #ddd;
 	background: #222;
-	padding: 20px;
+	padding: 15px;
 	cursor: pointer;
 	display: inline-block;
 	margin: 0;
@@ -329,7 +328,6 @@ i {
 	top: 50%;
 	transform: translate(-50%, -50%);
 	z-index: 99;
-	padding-top: 8px;
 	font-size: 5.8vh;
 	visibility: hidden;
 	display: inline
@@ -476,6 +474,70 @@ h2#high-score {
 	box-shadow: 0 0 25px 0px #ddd;
   }
 }
+
+
+.pulsingText {
+	animation: pulseText 2s infinite;
+	z-index: 100;
+	position: relative;
+}
+
+@-webkit-keyframes pulseText {
+  0% {
+	text-shadow: 0 0 0px #ddd;
+  }
+  50% {
+	text-shadow: 0 0 10px #ddd , 0 0 20px #ddd , 0 0 30px #ddd , 0 0 40px #ddd, 0 0 70px #ddd, , 0 0 100px #ddd;
+
+  }
+  100% {
+	text-shadow: 0 0 0px #ddd;
+  }
+}
+
+@keyframes pulseText {
+  0% {
+	text-shadow: 0 0 0px #ddd;
+  }
+  50% {
+	text-shadow: 0 0 10px #ddd , 0 0 20px #ddd , 0 0 30px #ddd , 0 0 40px #ddd, 0 0 70px #ddd, , 0 0 100px #ddd;
+
+  }
+  100% {
+	text-shadow: 0 0 0px #ddd;
+  }
+}
+
+.colorPulsing {
+	animation: colorpulse 2s infinite;
+	z-index: 100;
+	position: relative;
+}
+
+@-webkit-keyframes colorpulse {
+  0% {
+	box-shadow: 0 0 25px 0px #5e99b0;
+  }
+  50% {
+	box-shadow: 0 0 25px 10px #5e99b0;
+  }
+  100% {
+	box-shadow: 0 0 25px 0px #5e99b0;
+  }
+}
+
+@keyframes colorpulse {
+  0% {
+	box-shadow: 0 0 25px 0px #5e99b0;
+  }
+  50% {
+	box-shadow: 0 0 25px 10px #5e99b0;
+  }
+  100% {
+	box-shadow: 0 0 25px 0px #5e99b0;
+  }
+}
+
 
 /*ABOUT SCREEN*/
 
