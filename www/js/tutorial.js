@@ -320,7 +320,7 @@ function tutorialNext() {
 		messageBox.fadeTextOut()
 			.then(function() {
 				messageBox.write([
-					"Power-ups become available one by one, starting on level 5 and completing on level 7."
+					"Powerups become available one by one, starting with level 5 and completing on level 7."
 					])
 				return pause(PAUSE_TIME).then(messageBox.fadeTextIn.bind(messageBox))
 			})
