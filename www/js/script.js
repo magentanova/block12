@@ -137,7 +137,7 @@ var STATE = EVENTS.extend({
 		playerBlocks: Array(4).fill(['red','blue'].choice()),
 		score: 0,
 		settings: SETTINGS,
-		song: '#beep-box',
+		song: '#bloq-slow',
 		sqSide: null,
 		view: 'home'
 	},
@@ -156,7 +156,7 @@ var STATE = EVENTS.extend({
 		playerBlocks: Array(4).fill(['red','blue'].choice()),
 		score: 0,
 		settings: SETTINGS,
-		song: '#hallelujah',
+		song: '#bloq-slow',
 		sqSide: null,
 		view: 'home'
 	},
@@ -790,8 +790,9 @@ Block.prototype = Component.prototype.extend({
 	},
 
 	fill: function(color) {
+		console.log(color)
 		this.setStyle({
-			background: STATE.get('settings').colors[color]
+			background: SETTINGS.colors[color]
 		})
 		this.node.setAttribute('data-color',color)
 		return this
@@ -811,7 +812,7 @@ Block.prototype = Component.prototype.extend({
 		color = ['red','blue'].choice()
 		this.node.setAttribute('data-color', color)
 		return this.setStyle({
-			background: STATE.get('settings').colors[color]
+			background: SETTINGS.colors[color]
 		})
 	},
 
@@ -821,7 +822,7 @@ Block.prototype = Component.prototype.extend({
 
 	switchColor: function() {
 		this.set("data-color", this.get('data-color') === 'red' ? 'blue' : 'red')
-		this.setStyle("background", STATE.get('settings').colors[this.get('data-color')])
+		this.setStyle("background", SETTINGS.colors[this.get('data-color')])
 	}
 })
 
@@ -1053,8 +1054,8 @@ function invertBlock(blockNode) {
 	return animate(function(res) {
 		var currentColorName = blockNode.getAttribute('data-color'),
 			targetColorName = currentColorName === 'red' ? 'blue' : 'red',
-			currentColors = getRGBObj(STATE.get('settings').colors[currentColorName]),
-			targetColors = getRGBObj(STATE.get('settings').colors[targetColorName]),
+			currentColors = getRGBObj(SETTINGS.colors[currentColorName]),
+			targetColors = getRGBObj(SETTINGS.colors[targetColorName]),
 			redIncr = (targetColors.red - currentColors.red) / CONSTANTS.invertSpeed,
 			greenIncr = (targetColors.green - currentColors.green) / CONSTANTS.invertSpeed,
 			blueIncr = (targetColors.blue - currentColors.blue) / CONSTANTS.invertSpeed
@@ -1124,8 +1125,12 @@ function pause(ms) {
 }
 
 function playMusic() {
-	if (STATE.get('song')) {
-		$(STATE.get('song')).play()
+	if (SETTINGS.music) {
+		var songEl = $(STATE.get('song'))
+		// if the song is not already playing
+		if (songEl.paused || !songEl.currentTime) {
+			songEl.play()
+		}
 	}
 }
 

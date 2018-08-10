@@ -16,9 +16,9 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
-    <name>bloq</name>
+    <name>Bloq</name>
     <description>
-       get to level 12 or you're a stupid idiot
+       A challenging puzzle game for the visual thinker. Many have tried, but few have made it to level 12...
     </description>
     <author email="richardsjustind@gmail.com" href="github.com/magentanova">
       moosecat 
@@ -56,5 +56,5 @@
     <preference name="Fullscreen" value="true" />
     <preference name="Orientation" value="landscape" />
     <preference name="DisallowOverscroll" value="true" />
-    <engine name="ios" spec="~4.1.1" />
+    <engine name="ios" spec="^4.5.4" />
 </widget>

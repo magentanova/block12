@@ -5,9 +5,15 @@
   "cordova": {
     "platforms": [
       "ios"
-    ]
+    ],
+    "plugins": {
+      "cordova-plugin-whitelist": {}
+    }
   },
   "dependencies": {
-    "cordova-ios": "~4.1.1"
+    "cordova-ios": "^4.5.4",
+    "cordova-plugin-splashscreen": "^5.0.2",
+    "cordova-plugin-whitelist": "1",
+    "cordova-splash": "^1.0.0"
   }
 }

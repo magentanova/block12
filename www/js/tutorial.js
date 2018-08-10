@@ -70,6 +70,10 @@ function deactivatePowerup(node) {
 	node.parentNode.replaceChild(node.cloneNode(true),node)
 }
 
+function displayContactEvent() {
+	return CONTACT_EVENT === 'click' ? 'click' : 'touch'
+}
+
 function handleTutorialPowerUp(e) {
 	nodeId = e.target.id
 	switch (nodeId) {
@@ -109,7 +113,7 @@ function tutorialNext() {
 				messageBox.write([
 					'The bottom row is your row.',
 					'The blocks in the bottom row are the only blocks that you control.',
-					`(${titleCase(CONTACT_EVENT)} to continue.)`
+					`(${titleCase(displayContactEvent())} to continue.)`
 					])
 				playerRow.class('colorPulsing')
 				return messageBox.fadeTextIn(messageBox)
@@ -146,7 +150,7 @@ function tutorialNext() {
 		messageBox.fadeTextOut()
 			.then(function() {
 				messageBox.write([
-					`${titleCase(CONTACT_EVENT)} the glowing block in your row to change its color.`
+					`${titleCase(displayContactEvent())} the glowing block in your row to change its color.`
 				])
 				return pause(PAUSE_TIME).then(messageBox.fadeTextIn.bind(messageBox))
 			})
@@ -190,7 +194,7 @@ function tutorialNext() {
 			.then(function() {
 				messageBox.write([
 					"You're in luck! The bottom row in the grid is almost the same as your row.",
-					`${titleCase(CONTACT_EVENT)} the glowing block to make a match.`
+					`${titleCase(displayContactEvent())} the glowing block to make a match.`
 					])
 				return pause(PAUSE_TIME).then(messageBox.fadeTextIn.bind(messageBox))
 			})
@@ -261,7 +265,7 @@ function tutorialNext() {
 			.then(function() {
 				messageBox.write([
 					"Lets make another match!",
-					`${titleCase(CONTACT_EVENT)} the glowing blocks to match your row to the bottom row in the grid.`,
+					`${titleCase(displayContactEvent())} the glowing blocks to match your row to the bottom row in the grid.`,
 					])
 				return pause(PAUSE_TIME).then(messageBox.fadeTextIn.bind(messageBox))
 			})
@@ -345,7 +349,7 @@ function tutorialNext() {
 				appear($('#shiftRight'))
 				appear($('#invert'))
 				appear($("#powerUpContainer")).then(function() {
-						var powerups = $("#powerUpContainer").children
+						var powerups = $("#powerUpContainer").querySelectorAll('.powerUp')
 						for (var i = 0; i < powerups.length; i += 1) {
 							powerups[i].classList.add('pulsing')
 						}
@@ -355,7 +359,7 @@ function tutorialNext() {
 	}
 
 	if (STATE.get('tutorialStep') == 16) {
-		var powerups = $("#powerUpContainer").children
+		var powerups = $("#powerUpContainer").querySelectorAll('.powerUp')
 		for (var i = 0; i < powerups.length; i += 1) {
 			powerups[i].classList.remove('pulsing')
 		}
