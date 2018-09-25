@@ -1,8 +1,4 @@
 // SET TOUCH VS CLICK
-var CONTACT_EVENT = 'click'
-if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-	CONTACT_EVENT = 'touchend'
-}
 
 var SETTINGS = {
 	music: true,
@@ -23,17 +19,19 @@ var SETTINGS = {
 				el.classList.add('alt')
 			})
 		}
-		$('#colors-slider').checked = SETTINGS.origColors
-		$('#music-slider').checked = SETTINGS.music
-		$('#sounds-slider').checked = SETTINGS.sounds
+		$('.colors.slider').checked = SETTINGS.origColors
+		$('.music.slider').checked = SETTINGS.music
+		$('.sounds.slider').checked = SETTINGS.sounds
 		this.listen()
+		$$('.slider').forEach(setSliderUI)
 	},
 	listen: function() {
-		$('#sounds-slider').addEventListener(CONTACT_EVENT, function(e) {
+		$('.sounds.slider').addEventListener(CONTACT_EVENT, function(e) {
 			SETTINGS.sounds = !SETTINGS.sounds
+			setSliderUI(e.target)
 		})
 
-		$('#colors-slider').addEventListener(CONTACT_EVENT, function(e) {
+		$('.colors.slider').addEventListener(CONTACT_EVENT, function(e) {
 			if (SETTINGS.origColors) {
 				SETTINGS.origColors = false
 				SETTINGS.colors.red = SETTINGS.secondaryRed
@@ -50,23 +48,21 @@ var SETTINGS = {
 					el.classList.remove('alt')
 				})
 			}
+			setSliderUI(e.target)
 		})
-		$('#music-slider').addEventListener(CONTACT_EVENT, function(e) {
-			console.log("event is heard again")
-			console.log("event is heard", e.target)
+		$('.music.slider').addEventListener(CONTACT_EVENT, function(e) {
 			if (SETTINGS.music) {
 				SETTINGS.music = false
 				$(STATE.get('song')).pause()
-				return
 			}
 			else {
 				SETTINGS.music = true
 				$(STATE.get('song')).play()
 			}
+			setSliderUI(e.target)
 		})
 	}
 }
-
 
 function debounce(e) {
 	// if (new Date() - e.target.getAttribute('clickedAt') < 1500) return true
@@ -75,3 +71,11 @@ function debounce(e) {
 	return false
 }
 
+function setSliderUI(el) {
+	if (SETTINGS[el.dataset.setting]) {
+		el.classList.add('activated')
+	}
+	else {
+		el.classList.remove('activated')
+	}
+}
