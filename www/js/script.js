@@ -43,7 +43,8 @@ var CONSTANTS = {
 	glowTimeout: SETTINGS.testMode ? 0 : 1500,
 	rowScoreTimeout: SETTINGS.testMode ? 0 : 550,
 	rotateIncr: SETTINGS.testMode ? 1000: 2.88,
-	songs: ['#polyphonic', '#hallelujah']
+	songs: ['#polyphonic', '#hallelujah'],
+	tones: 'egae'
 	// slideSpeed: STATE.get('sqSide') / 16 // this needs to be computed after page load. hrmm. 
 }
  
@@ -127,6 +128,7 @@ var STATE = EVENTS.extend({
 	attributes: {
 		advancing: false,
 		animating: false,
+		currentToneIndex: 0,
 		tutorialStep: 0,
 		gridRows: [],
 		tutorialStep: 0,
@@ -145,6 +147,7 @@ var STATE = EVENTS.extend({
 	defaultAttributes: {
 		advancing: false,
 		animating: false,
+		currentToneIndex: 0,
 		tutorialStep: 0,
 		tutorialStep: 0,
 		gridRows: [],
@@ -202,10 +205,7 @@ var STATE = EVENTS.extend({
 	levelUp: function() {
 		// constant actions at level change
 		// trigger level change, grid and width-dependent things will subscribe to it.
-		if (this.get('matchesThusFar') < this.get('level')) return 
-		if (closeTutorial()) {
-			return
-		}
+		if (this.get('matchesThusFar') < this.get('level')) return 0
 		playSound('level_up')
 		STATE.set({
 			advancing: true
@@ -306,6 +306,12 @@ var STATE = EVENTS.extend({
 
 // TEMPLATES
 var VIEWS = {
+	buyIt: {
+		content: TEMPLATES.buyIt,
+		init: function() {
+			// stub
+		}	
+	},
 	play: {
 		content: TEMPLATES.play,
 		init: function(opts) {
@@ -790,7 +796,6 @@ Block.prototype = Component.prototype.extend({
 	},
 
 	fill: function(color) {
-		console.log(color)
 		this.setStyle({
 			background: SETTINGS.colors[color]
 		})
@@ -799,7 +804,10 @@ Block.prototype = Component.prototype.extend({
 	},
 
 	handleClick: function(event) {
-		playSound('basic_tap')		
+		playSound('tap_' + CONSTANTS.tones[STATE.get('currentToneIndex')])		
+		STATE.set({
+			currentToneIndex: (STATE.get('currentToneIndex') + 1) % CONSTANTS.tones.length
+		})
 		if (STATE.get('advancing') || STATE.get('animating')) return 
 		this.switchColor()
 		EVENTS.trigger('playerRowChange')
@@ -998,6 +1006,9 @@ function getRGBStr(obj) {
 
 function handleLoss() {
 	if (STATE.get('currentRows') > STATE.get('maxRows')) {
+		// hacky way to prevent final, losing row from overflowing the grid
+		$('#grid').querySelectorAll('.row')[STATE.get('maxRows')].style.display = 'none'
+		// /hack
 		saveScore()
 		showPlayButton()
 		$('#playerRowContainer').innerHTML = '<p id="loseMessage">YOU LOSE</p>'
@@ -1107,7 +1118,15 @@ function main() {
 	if (STATE.getSavedState()) {
 		STATE.load(STATE.getSavedState())
 	}
-	loadView('home')
+	if ( onMobile() ) {
+		// OVERRIDE EVERYTHING AND REDIRECT IF ON MOBILE
+		loadView('buyIt')
+		$("#goBack").style.display = 'none' 
+		// and hide the hamburger
+	}
+	else {
+		loadView('home')
+	}
 }
 
 function pause(ms) {
@@ -1128,14 +1147,22 @@ function playMusic() {
 	if (SETTINGS.music) {
 		var songEl = $(STATE.get('song'))
 		// if the song is not already playing
-		if (songEl.paused || !songEl.currentTime) {
+		if (!isPlaying(songEl)) {
 			songEl.play()
 		}
 	}
 }
 
 function playSound(soundName) {
-	if (SETTINGS.sounds) $('#' + soundName + '_sound').play()
+	if (SETTINGS.sounds) {
+		var soundEl = $('#' + soundName + '_sound')
+		if (isPlaying(soundEl)) {
+			replay(soundEl)
+		}
+		else {
+			soundEl.play()
+		}
+	}
 }
 
 function runLevel() {

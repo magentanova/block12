@@ -34,7 +34,8 @@ body {
 	height: 100vh;
 	-webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
 	-webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
-	-webkit-user-select: none; /* prevent copy paste, to allow, change 'none' to 'text' */}}
+	-webkit-user-select: none; /* prevent copy paste, to allow, change 'none' to 'text' */
+}
 
 h1 {
 	font-size: 5.8vh;
@@ -615,7 +616,9 @@ h2#high-score {
 }
 
 /* Hide default HTML checkbox */
-.switch input {display:none;}
+.switch .switch-button {
+	display: none;
+}
 
 /* The slider */
 .slider {
@@ -650,39 +653,31 @@ h2#high-score {
 	background-color: rgb(76,134,168);
 }
 
-input:checked + .slider:before {
+span.slider.activated:before {
   background-color: rgb(170, 77, 57);
 }
 
-input:checked + .slider {
+span.slider.activated {
   background-color: rgb(39, 88, 107);
 }
 
-input:checked + .slider.alt:before {
+span.slider.activated.alt:before {
   background-color: rgb(76,134,168);
 }
 
-input:checked + .slider.alt {
+span.slider.activated.alt {
   background-color: rgb(192, 74, 188);
 }
 
-input:checked + .slider.colors.alt:before {
+span.slider.activated.colors.alt:before {
   background-color: rgb(170, 77, 57);
 }
 
-input:checked + .slider.colors.alt {
+span.slider.activated.colors.alt {
   background-color: rgb(76,134,168);
 }
 
-input:focus + .slider {
-  box-shadow: 0 0 1px #222;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #222;
-}
-
-input:checked + .slider:before {
+span.slider.activated:before {
   -webkit-transform: translateX(64px);
   -ms-transform: translateX(64px);
   transform: translateX(64px);
@@ -696,4 +691,10 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
+/* "buyIt" view */
 
+.buyIt-wrapper img {
+	/* margin-top: 6vh; */
+	display: block;
+	margin: 0 auto;
+}

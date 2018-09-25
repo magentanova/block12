@@ -1,9 +1,8 @@
 "use strict;"
 
-
 // SET TOUCH VS CLICK 
 var CONTACT_EVENT = 'click'
-if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+if ( onMobile() ) {
 	CONTACT_EVENT = 'touchend'
 }
 
@@ -16,6 +15,28 @@ function $$(sel) {
 	return document.querySelectorAll(sel)
 }
 
+// helpers for all code
+function isPlaying(el) {
+	return !el.paused || el.currentTime > 0
+}
+
+function onMobile() {
+	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+}
+
+function replay(el) {
+	el.currentTime = 0
+	el.pause()
+	el.play()
+}
+
+// Proper volume mixing on SFX
+$("#invert_sound").volume = .5; 
+$("#flip_sound").volume = .1; 
+$("#slide_sound").volume = .2;
+$("#tap_e_sound").volume = .2;
+$("#tap_g_sound").volume = .2;
+$("#tap_a_sound").volume = .2;
 
 // PROTOTYPE MODS
 ;(function(){
