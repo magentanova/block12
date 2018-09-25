@@ -1118,12 +1118,7 @@ function main() {
 	if (STATE.getSavedState()) {
 		STATE.load(STATE.getSavedState())
 	}
-	if ( onMobile() ) {
-		// OVERRIDE EVERYTHING AND REDIRECT IF ON MOBILE
-		loadView('buyIt')
-		$("#goBack").style.display = 'none' 
-		// and hide the hamburger
-	}
+
 	else {
 		loadView('home')
 	}
