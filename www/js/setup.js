@@ -33,10 +33,10 @@ function replay(el) {
 // Proper volume mixing on SFX
 $("#invert_sound").volume = .5; 
 $("#flip_sound").volume = .1; 
-$("#slide_sound").volume = .2;
-$("#tap_e_sound").volume = .2;
-$("#tap_g_sound").volume = .2;
-$("#tap_a_sound").volume = .2;
+$("#slide_sound").volume = .3;
+$("#tap_e_sound").volume = .3;
+$("#tap_g_sound").volume = .3;
+$("#tap_a_sound").volume = .3;
 
 // PROTOTYPE MODS
 ;(function(){
