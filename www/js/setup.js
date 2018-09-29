@@ -31,9 +31,12 @@ function replay(el) {
 }
 
 // Proper volume mixing on SFX
+$("#bloq-slow").volume = .5;
 $("#invert_sound").volume = .5; 
+$("#land_sound").volume = .3; 
+$("#level_up_sound").volume = .3; 
 $("#flip_sound").volume = .1; 
-$("#slide_sound").volume = .3;
+$("#slide_sound").volume = .15;
 $("#tap_e_sound").volume = .3;
 $("#tap_g_sound").volume = .3;
 $("#tap_a_sound").volume = .3;

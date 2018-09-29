@@ -206,7 +206,12 @@ var STATE = EVENTS.extend({
 		// constant actions at level change
 		// trigger level change, grid and width-dependent things will subscribe to it.
 		if (this.get('matchesThusFar') < this.get('level')) return 0
-		playSound('level_up')
+		setTimeout(
+			function(){
+				playSound('level_up')
+			},
+			500
+		)
 		STATE.set({
 			advancing: true
 		})
