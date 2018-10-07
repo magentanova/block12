@@ -1124,9 +1124,7 @@ function main() {
 		STATE.load(STATE.getSavedState())
 	}
 
-	else {
-		loadView('home')
-	}
+	loadView('home')
 }
 
 function pause(ms) {

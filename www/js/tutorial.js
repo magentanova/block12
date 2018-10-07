@@ -164,7 +164,7 @@ function tutorialNext() {
 		messageBox.fadeTextOut()
 			.then(function() {
 				messageBox.write([
-					`Careful! Every time you ${CONTACT_EVENT} a block, a grid row will fall.`,
+					`Careful! Every time you ${displayContactEvent()} a block, a grid row will fall.`,
 					])
 				return pause(PAUSE_TIME).then(messageBox.fadeTextIn.bind(messageBox))
 			})
