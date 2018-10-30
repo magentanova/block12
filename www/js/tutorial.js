@@ -535,7 +535,7 @@ function runTutorial() {
 	EVENTS.on(EVENTS.names.tutorialAdvance, tutorialNext)
 
 	// ready for step 1!
-	COMPONENTS.get('messageBox').mount().write(['Welcome to block!','(Click to continue.)'])
+	COMPONENTS.get('messageBox').mount().write(['Welcome to block12!','(Click to continue.)'])
 	pause(PAUSE_TIME).then(function() {
 		$('body').addEventListener(CONTACT_EVENT, advanceTutorial)
 	})

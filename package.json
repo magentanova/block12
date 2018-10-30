@@ -1,7 +1,7 @@
 {
   "name": "com.moosecat.block12",
   "version": "0.0.2",
-  "displayName": "bloq",
+  "displayName": "Block12",
   "cordova": {
     "platforms": [
       "ios"

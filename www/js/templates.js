@@ -1,10 +1,10 @@
 var TEMPLATES = {
 	buyIt: '\
 		<div class="buyIt-wrapper">\
-			<h1 class="buyIt-title">bloq</h1> \
+			<h1 class="buyIt-title">Block12</h1> \
 			<img class="buyIt-logo" src="images/bloqLogo.png" /> \
 			<p class="buyIt-copy"> \
-				To play bloq on a mobile device, download it from the app store. \
+				To play Block12 on a mobile device, download it from the app store. \
 			</p> \
 			<a href="https://itunes.apple.com/us/app/love-island-the-game/id1280910599?mt=8" style="display:inline-block;overflow:hidden;background:url(https://linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-lrg.svg) no-repeat;width:135px;height:40px;"></a>\
 		</div>',
@@ -43,7 +43,7 @@ var TEMPLATES = {
 	home: '' + 
 '				<div id="home-content">' + 
 '					<div id="title-wrapper" class="home">' + 
-'							<h1>bloq</h1>' + 
+'							<h1>block12</h1>' + 
 '						</div>' + 
 '					<div id="menu-boxes">' + 
 '						<div class="row">' +

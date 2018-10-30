@@ -16,7 +16,7 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
-    <name>Bloq</name>
+    <name>Block12</name>
     <description>
        A challenging puzzle game for the visual thinker. Many have tried, but few have made it to level 12...
     </description>
@@ -55,6 +55,7 @@
     </platform>
     <preference name="Fullscreen" value="true" />
     <preference name="Orientation" value="landscape" />
+    <preference name="target-device" value="handset" />
     <preference name="DisallowOverscroll" value="true" />
     <engine name="ios" spec="^4.5.5" />
 </widget>
